@@ -67,7 +67,7 @@ class sheet {
      */
     public function row_groups(): array {
         $map = [];
-        foreach ($this->groups as $g => [$label, $first, $last]) {
+        foreach ($this->groups as $g => [, $first, $last]) {
             for ($r = $first; $r <= $last; $r++) {
                 $map[$r] = $g;
             }

@@ -120,7 +120,7 @@ class export_form extends \moodleform {
             $formats[$f] = get_string('format_' . $f, 'local_advancedexport');
         }
         $mform->addElement('select', 'format', get_string('format', 'local_advancedexport'), $formats);
-        [$complete, $incomplete] = $c['counts'];
+        $incomplete = $c['counts'][1];
         $mform->addElement(
             'advcheckbox',
             'includeincomplete',
