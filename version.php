@@ -28,10 +28,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_advancedexport';
-$plugin->version   = 2026101500;
+$plugin->version   = 2026112000;
 $plugin->requires  = 2024100700; // Moodle 4.5.
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.1.1';
+$plugin->release   = '1.1.2';
 $plugin->dependencies = [
     'mod_questionnaire' => 2024080100,
 ];
