@@ -276,17 +276,12 @@ class writer {
             $path = $dir . '/' . clean_filename($basename . ' - ' . $name) . '.csv';
             $fh = fopen($path, 'w');
             fwrite($fh, "\xEF\xBB\xBF"); // UTF-8 BOM so Excel shows accents correctly.
-            fputcsv($fh, $s->headers, ';');
+            fputcsv($fh, array_map([self::class, 'csv_cell'], $s->headers), ';');
             foreach ($s->rows as $row) {
                 foreach ($s->pctcols as $c) {
                     $row[$c] = round($row[$c] * 100) . '%';
                 }
-                foreach ($row as $c => $v) {
-                    if (is_string($v)) {
-                        $row[$c] = str_replace("\n", '; ', $v);
-                    }
-                }
-                fputcsv($fh, $row, ';');
+                fputcsv($fh, array_map([self::class, 'csv_cell'], $row), ';');
             }
             fclose($fh);
             $files[basename($path)] = $path;
@@ -298,6 +293,27 @@ class writer {
         $zippath = $dir . '/' . $basename . '.zip';
         get_file_packer('application/zip')->archive_to_pathname($files, $zippath);
         return [$zippath, $basename . '.zip'];
+    }
+
+    /**
+     * Make one CSV cell safe to open in a spreadsheet.
+     *
+     * Line breaks become "; ". A text that starts with =, +, -, @, a tab or a carriage return would be run
+     * as a formula by Excel or LibreOffice (CSV/formula injection), so it gets a leading apostrophe and is
+     * shown as plain text. Numbers are left as they are.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function csv_cell($value) {
+        if (!is_string($value)) {
+            return $value;
+        }
+        $value = str_replace(["\r\n", "\n"], '; ', $value);
+        if ($value !== '' && strpbrk($value[0], "=+-@\t\r") !== false) {
+            $value = "'" . $value;
+        }
+        return $value;
     }
 
     /**
